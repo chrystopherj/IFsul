@@ -1,0 +1,178 @@
+import java.util.Scanner;
+
+public class Main {
+    private static String nome;
+    private static String dataNascimento;
+    private static int idade;
+    private static String genero;
+    private static String cpf;
+    private static String senha;
+    private static double saldo;
+    private static String[] extrato = new String[10];
+    private static int contadorExtrato = 0;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+                
+        int opcao;
+        do {
+            exibirMenu();
+            opcao = scanner.nextInt();
+            scanner.nextLine();  
+            
+            switch (opcao) {
+                case 1:
+                    informarDadosCadastrais(scanner);
+                    break;
+                case 2:
+                    informarSenha(scanner);
+                    break;
+                case 3:
+                    realizarDeposito(scanner);
+                    break;
+                case 4:
+                    realizarSaque(scanner);
+                    break;
+                case 5:
+                    realizarEmprestimo(scanner);
+                    break;
+                case 6:
+                    visualizarSaldo();
+                    break;
+                case 7:
+                    visualizarExtrato();
+                    break;
+                case 0:
+                    System.out.println("Obrigado por utilizar o banco SHADE. Até logo!");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
+            }
+        } while (opcao != 0);
+
+        scanner.close();
+    }
+
+    private static void exibirMenu() {
+    	
+    	try {
+            Thread.sleep(3000); // tentei colocar um delay pra ficar mais natural e dar tempo de ver a resposta do programa no extrato e etc...
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    	System.out.println(""); //e aqui um espaço pra nao ficar colado um menu no outro e tal...
+        System.out.println("Bem vindo ao banco SHADE!");
+        System.out.println("Digite o número da opção desejada:");
+        System.out.println("1 - Informar dados cadastrais do cliente");
+        System.out.println("2 - Informar senha do cliente");
+        System.out.println("3 - Realizar depósito");
+        System.out.println("4 - Realizar saque");
+        System.out.println("5 - Realizar empréstimo");
+        System.out.println("6 - Visualizar saldo");
+        System.out.println("7 - Visualizar extrato");
+        System.out.println("0 - Sair");
+        System.out.print("Opção desejada: ");
+    }
+
+    private static void informarDadosCadastrais(Scanner scanner) {
+        System.out.print("Informe o nome: ");
+        nome = scanner.nextLine();
+
+        System.out.print("Informe a data de nascimento: ");
+        dataNascimento = scanner.nextLine();
+
+        System.out.print("Informe a idade: ");
+        idade = scanner.nextInt();
+        scanner.nextLine();  
+
+        System.out.print("Informe o gênero: ");
+        genero = scanner.nextLine();
+
+        System.out.print("Informe o CPF: ");
+        cpf = scanner.nextLine();
+
+        System.out.println("Dados cadastrais atualizados com sucesso!");
+    }
+ 
+    private static void informarSenha(Scanner scanner) {
+        System.out.print("Informe a senha: ");
+        senha = scanner.nextLine();
+        System.out.println("Senha cadastrada com sucesso!");
+        
+    }
+
+    private static void realizarDeposito(Scanner scanner) {
+        autenticarUsuario(scanner);
+
+        System.out.print("Informe o valor do depósito: ");
+        double valorDeposito = scanner.nextDouble();
+        scanner.nextLine();  
+        
+        saldo += valorDeposito;
+
+        registrarAcao("Depósito de " + valorDeposito + " reais");
+        System.out.println("Depósito realizado com sucesso!");
+        System.out.println("");
+    }
+
+    private static void realizarSaque(Scanner scanner) {
+        autenticarUsuario(scanner);
+
+        System.out.print("Informe o valor do saque: ");
+        double valorSaque = scanner.nextDouble();
+        scanner.nextLine();  
+        
+        if (valorSaque <= saldo) {
+            saldo -= valorSaque;
+            registrarAcao("Saque de " + valorSaque + " reais");
+            System.out.println("Saque realizado com sucesso!");
+        } else {
+            System.out.println("Saldo insuficiente para realizar o saque.");
+        }
+    }
+
+    private static void realizarEmprestimo(Scanner scanner) {
+        autenticarUsuario(scanner);
+
+        double valorMaxEmprestimo = saldo * 0.5;
+
+        System.out.println("Valor máximo de empréstimo disponível: " + valorMaxEmprestimo + " reais");
+        System.out.print("Deseja aceitar o empréstimo? (S/N): ");
+        char resposta = scanner.next().charAt(0);
+        scanner.nextLine();  
+        
+        if (resposta == 'S' || resposta == 's') {
+            saldo += valorMaxEmprestimo;
+            registrarAcao("Empréstimo de " + valorMaxEmprestimo + " reais");
+            System.out.println("Empréstimo realizado com sucesso!");
+        } else {
+            System.out.println("Empréstimo não aceito.");
+        }
+    }
+
+    private static void visualizarSaldo() {
+        System.out.println("Saldo atual: " + saldo + " reais");
+    }
+
+    private static void visualizarExtrato() {
+        System.out.println("Extrato das últimas 10 ações:");
+        for (int i = contadorExtrato - 1; i >= 0; i--) {
+            System.out.println(extrato[i]);            
+        }
+    }
+
+    private static void autenticarUsuario(Scanner scanner) {
+        System.out.print("Informe a senha: ");
+        String senhaInformada = scanner.nextLine();
+
+        if (!senhaInformada.equals(senha)) {
+            System.out.println("Senha incorreta. Operação não autorizada.");
+            System.exit(0);
+        }
+    }
+
+    private static void registrarAcao(String acao) {
+        extrato[contadorExtrato % 10] = acao;
+        contadorExtrato++;
+    }
+}
